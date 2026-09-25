@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AdminEmpty, TableShell, rowClass, tdClass, thClass } from "@/components/admin/admin-table";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { PageActions } from "@/components/admin/page-actions";
 import { ServiceFormDialog } from "@/components/admin/service-form-dialog";
 import { Button } from "@/components/ui/button";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
@@ -74,15 +75,19 @@ export function ServicesTable({ services, categories, hasFilters, total }: Servi
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-muted-foreground text-sm">
-          {total} {total === 1 ? "service" : "services"}
-        </p>
-        <Button className="h-10" onClick={openCreate} disabled={categories.length === 0}>
+      <PageActions>
+        <Button
+          className="h-11 rounded-full px-5"
+          onClick={openCreate}
+          disabled={categories.length === 0}
+        >
           <Plus aria-hidden="true" />
           Add service
         </Button>
-      </div>
+      </PageActions>
+      <p className="text-admin-muted text-[13px]" aria-live="polite">
+        {total} {total === 1 ? "service" : "services"}
+      </p>
 
       {services.length === 0 ? (
         <AdminEmpty
@@ -94,7 +99,7 @@ export function ServicesTable({ services, categories, hasFilters, total }: Servi
           }
           action={
             !hasFilters && (
-              <Button className="mt-2 h-10" onClick={openCreate}>
+              <Button className="mt-2 rounded-full" onClick={openCreate}>
                 <Plus aria-hidden="true" />
                 Add service
               </Button>
@@ -152,7 +157,7 @@ export function ServicesTable({ services, categories, hasFilters, total }: Servi
                       <span
                         className={cn(
                           "text-xs font-medium",
-                          active ? "text-primary" : "text-muted-foreground",
+                          active ? "text-ink" : "text-muted-foreground",
                         )}
                       >
                         {active ? "Active" : "Inactive"}

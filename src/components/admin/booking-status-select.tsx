@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
-import { STATUS_LABELS, STATUS_STYLES } from "@/components/bookings/status-badge";
+import { STATUS_VAR } from "@/components/admin/status-pill";
+import { STATUS_LABELS } from "@/components/bookings/status-badge";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 import { nextStatuses, type BookingStatus } from "@/lib/booking-rules";
 import { cn } from "@/lib/utils";
@@ -57,11 +58,12 @@ export function BookingStatusSelect({ bookingId, status, summary }: BookingStatu
           if (next === "CANCELLED") setConfirmCancel(true);
           else update(next).catch(() => undefined);
         }}
+        // Outlined status pill (see .status-pill in globals.css): colored text on dark
+        // surfaces, dark text with a colored border inside white panels.
+        style={{ "--pill": STATUS_VAR[status] } as React.CSSProperties}
         className={cn(
-          "rounded-control focus-visible:ring-ring/50 h-8 border pr-7 pl-2.5 text-xs font-semibold outline-none focus-visible:ring-3 disabled:cursor-default disabled:opacity-100",
-          options.length === 0 && "appearance-none pr-2.5",
-          "border-transparent ring-1 ring-inset",
-          STATUS_STYLES[status],
+          "status-pill h-8 rounded-full border bg-transparent pr-7 pl-3 text-xs font-medium disabled:cursor-default disabled:opacity-100",
+          options.length === 0 && "appearance-none pr-3",
         )}
       >
         <option value={status}>{STATUS_LABELS[status]}</option>

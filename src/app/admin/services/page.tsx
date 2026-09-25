@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { AdminFilters } from "@/components/admin/admin-filters";
+import { FilterBar } from "@/components/admin/filter-bar";
+import { PillTabs, tabHref } from "@/components/admin/pill-tabs";
 import { ServicesTable } from "@/components/admin/services-table";
 import { Pagination } from "@/components/services/pagination";
 import { requirePageAdmin } from "@/lib/auth";
@@ -22,25 +23,45 @@ export default async function AdminServicesPage({ searchParams }: AdminServicesP
     limit: PAGE_SIZE,
   };
 
-  const [categories, { data: services, meta }] = await Promise.all([
+  // Tab counts ignore the status filter so each tab shows its own total.
+  const countQuery = { ...query, status: undefined, page: 1, limit: 1 };
+  const [categories, { data: services, meta }, all, active, inactive] = await Promise.all([
     getCategories(),
     listServices(query, { isAdmin: true }),
+    listServices(countQuery, { isAdmin: true }),
+    listServices({ ...countQuery, status: "ACTIVE" }, { isAdmin: true }),
+    listServices({ ...countQuery, status: "INACTIVE" }, { isAdmin: true }),
   ]);
 
   const linkParams: Record<string, string> = {};
   for (const key of ["search", "categoryId", "status"] as const) {
     if (query[key]) linkParams[key] = query[key];
   }
+  const tab = (label: string, count: number, status?: "ACTIVE" | "INACTIVE") => ({
+    label,
+    count,
+    href: tabHref("/admin/services", linkParams, "status", status),
+    active: query.status === status,
+  });
 
   return (
     <div className="space-y-5">
-      <AdminFilters
+      <PillTabs
+        label="Service status"
+        tabs={[
+          tab("All", all.meta.total),
+          tab("Active", active.meta.total, "ACTIVE"),
+          tab("Inactive", inactive.meta.total, "INACTIVE"),
+        ]}
+      />
+      <FilterBar
+        preserve={["status"]}
         fields={[
           {
             type: "search",
             key: "search",
-            label: "Search",
-            placeholder: "Name or description...",
+            label: "Search services",
+            placeholder: "Search name or description...",
           },
           {
             type: "select",
@@ -49,16 +70,6 @@ export default async function AdminServicesPage({ searchParams }: AdminServicesP
             options: [
               { value: "", label: "All categories" },
               ...categories.map((c) => ({ value: c.id, label: c.name })),
-            ],
-          },
-          {
-            type: "select",
-            key: "status",
-            label: "Status",
-            options: [
-              { value: "", label: "All statuses" },
-              { value: "ACTIVE", label: "Active" },
-              { value: "INACTIVE", label: "Inactive" },
             ],
           },
         ]}

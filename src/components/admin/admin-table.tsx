@@ -2,7 +2,6 @@ import { SearchX } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-/** Card-wrapped table that scrolls horizontally on small screens. */
 type TableShellProps = {
   children: React.ReactNode;
   label: string;
@@ -10,9 +9,10 @@ type TableShellProps = {
   minWidth?: "sm" | "md";
 };
 
+/** White panel (LightPanel styling) holding a table that scrolls horizontally when narrow. */
 export function TableShell({ children, label, minWidth = "md" }: TableShellProps) {
   return (
-    <div className="bg-card border-border rounded-card overflow-hidden border">
+    <div className="admin-light bg-admin-light rounded-panel min-w-0 overflow-hidden p-2 sm:p-3">
       <div className="overflow-x-auto">
         <table
           className={cn("w-full text-sm", minWidth === "md" ? "min-w-[720px]" : "min-w-[540px]")}
@@ -26,17 +26,18 @@ export function TableShell({ children, label, minWidth = "md" }: TableShellProps
 }
 
 export const thClass =
-  "text-muted-foreground bg-muted/50 border-border border-b px-4 py-3 text-left text-xs font-semibold tracking-wide whitespace-nowrap uppercase";
-export const tdClass = "border-border border-b px-4 py-3 align-middle";
+  "text-muted-foreground border-border border-b px-4 py-3 text-left text-xs font-medium whitespace-nowrap";
+export const tdClass = "border-border text-ink border-b px-4 py-3 align-middle";
 
 export function rowClass(clickable: boolean) {
   return cn(
     "[&:last-child>td]:border-b-0",
     clickable &&
-      "hover:bg-muted/40 focus-visible:ring-ring cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset",
+      "hover:bg-muted focus-visible:ring-ring cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset",
   );
 }
 
+/** Empty state in a dark panel (lime icon on dark is fine; lime never appears on white). */
 export function AdminEmpty({
   title,
   description,
@@ -47,12 +48,12 @@ export function AdminEmpty({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="border-border bg-card rounded-card flex flex-col items-center gap-3 border border-dashed px-6 py-14 text-center">
-      <div className="bg-primary/10 text-primary rounded-full p-3">
+    <div className="border-admin-border bg-admin-panel rounded-panel flex flex-col items-center gap-3 border border-dashed px-6 py-14 text-center">
+      <div className="bg-admin-panel-2 text-admin-accent rounded-full p-3">
         <SearchX className="size-6" aria-hidden="true" />
       </div>
-      <h2 className="text-ink text-lg font-semibold">{title}</h2>
-      <p className="text-muted-foreground max-w-sm text-sm">{description}</p>
+      <h2 className="text-admin-text text-lg font-medium">{title}</h2>
+      <p className="text-admin-muted max-w-sm text-sm">{description}</p>
       {action}
     </div>
   );
@@ -60,10 +61,10 @@ export function AdminEmpty({
 
 export function TableSkeleton({ rows = 8, columns = 6 }: { rows?: number; columns?: number }) {
   return (
-    <div className="bg-card border-border rounded-card overflow-hidden border" aria-hidden="true">
-      <div className="bg-muted/50 border-border flex gap-4 border-b px-4 py-3">
+    <div className="admin-light bg-admin-light rounded-panel p-2 sm:p-3" aria-hidden="true">
+      <div className="border-border flex gap-4 border-b px-4 py-3">
         {Array.from({ length: columns }, (_, i) => (
-          <Skeleton key={i} className="h-4 flex-1" />
+          <Skeleton key={i} className="h-3.5 flex-1" />
         ))}
       </div>
       {Array.from({ length: rows }, (_, r) => (
@@ -77,15 +78,13 @@ export function TableSkeleton({ rows = 8, columns = 6 }: { rows?: number; column
   );
 }
 
+/** Loading state for list pages: pill tabs, filter bar and a table, all in theme colors. */
 export function AdminPageSkeleton({ columns = 6 }: { columns?: number }) {
   return (
     <div className="space-y-5" aria-busy="true">
       <span className="sr-only">Loading...</span>
-      <div className="flex justify-between gap-4">
-        <Skeleton className="h-6 w-48" />
-        <Skeleton className="h-10 w-32" />
-      </div>
-      <Skeleton className="rounded-card h-[74px] w-full" />
+      <Skeleton className="bg-admin-panel h-11 w-80 max-w-full rounded-full" />
+      <Skeleton className="bg-admin-panel rounded-panel h-[72px] w-full" />
       <TableSkeleton columns={columns} />
     </div>
   );

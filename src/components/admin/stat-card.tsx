@@ -1,18 +1,52 @@
-import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type StatCardProps = { label: string; value: string; icon: LucideIcon; hint?: string };
+type StatCardProps = {
+  label: string;
+  value: React.ReactNode;
+  subLabel?: React.ReactNode;
+  /** 0..1 fills a lime bar on a muted track. */
+  progress?: number;
+  /** Accessible description of the progress bar, e.g. "3 of 12 bookings". */
+  progressLabel?: string;
+  footer?: React.ReactNode;
+  className?: string;
+};
 
-export function StatCard({ label, value, icon: Icon, hint }: StatCardProps) {
+export function StatCard({
+  label,
+  value,
+  subLabel,
+  progress,
+  progressLabel,
+  footer,
+  className,
+}: StatCardProps) {
+  const pct =
+    progress === undefined ? undefined : Math.round(Math.min(1, Math.max(0, progress)) * 100);
+
   return (
-    <div className="bg-card border-border rounded-card border p-5">
-      <div className="text-muted-foreground flex items-center justify-between text-sm">
-        {label}
-        <span className="bg-primary/10 text-primary rounded-full p-2">
-          <Icon className="size-4" aria-hidden="true" />
-        </span>
-      </div>
-      <p className="text-ink mt-2 text-2xl font-bold">{value}</p>
-      {hint && <p className="text-muted-foreground mt-1 text-xs">{hint}</p>}
+    <div
+      className={cn(
+        "bg-admin-bg border-admin-border rounded-inner flex min-w-0 flex-col gap-3 border p-4 sm:p-5",
+        className,
+      )}
+    >
+      <p className="text-admin-muted text-[13px]">{label}</p>
+      <p className="text-admin-text text-[30px] leading-none font-medium tracking-tight">{value}</p>
+      {subLabel && <p className="text-admin-muted text-[13px]">{subLabel}</p>}
+      {pct !== undefined && (
+        <div
+          role="progressbar"
+          aria-label={progressLabel ?? label}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={pct}
+          className="bg-admin-panel-2 h-1.5 overflow-hidden rounded-full"
+        >
+          <div className="bg-admin-accent h-full rounded-full" style={{ width: `${pct}%` }} />
+        </div>
+      )}
+      {footer && <div className="mt-auto pt-1">{footer}</div>}
     </div>
   );
 }

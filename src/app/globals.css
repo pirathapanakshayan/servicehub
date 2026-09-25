@@ -14,6 +14,25 @@
   --color-surface: var(--brand-surface);
   --color-warning: var(--brand-accent);
   --color-danger: var(--brand-danger);
+  --color-admin-frame: var(--admin-frame);
+  --color-admin-bg: var(--admin-bg);
+  --color-admin-panel: var(--admin-panel);
+  --color-admin-panel-2: var(--admin-panel-2);
+  --color-admin-border: var(--admin-border);
+  --color-admin-text: var(--admin-text);
+  --color-admin-muted: var(--admin-muted);
+  --color-admin-accent: var(--admin-accent);
+  --color-admin-accent-hover: var(--admin-accent-hover);
+  --color-admin-accent-ink: var(--admin-accent-ink);
+  --color-admin-light: var(--admin-light);
+  --color-admin-light-text: var(--admin-light-text);
+  --color-admin-light-muted: var(--admin-light-muted);
+  --color-admin-control-border: var(--admin-control-border);
+  --color-admin-danger: var(--admin-danger);
+  /* Admin radii: canvas 28px, panels 24px, inner cards 18px (pills use rounded-full). */
+  --radius-canvas: 28px;
+  --radius-panel: 24px;
+  --radius-inner: 18px;
   --radius-card: 10px;
   --radius-control: 8px;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -33,6 +52,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -81,6 +101,7 @@
   --accent: #f1f5f9;
   --accent-foreground: var(--brand-ink);
   --destructive: var(--brand-danger);
+  --destructive-foreground: #ffffff;
   --border: var(--brand-border);
   /* Form control borders: darker than --border so fields meet the WCAG 1.4.11 3:1 contrast
      for UI boundaries (#E2E8F0 on white is ~1.2:1). */
@@ -134,6 +155,145 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* -------------------------------------------------------------------------------------------
+ * Admin theme (see CLAUDE.md "Admin theme"). Scoped to the admin layout root (.admin-theme).
+ * `body:has(.admin-theme)` extends it to portaled dialogs, sheets, menus and toasts, which
+ * render outside the layout root; only admin pages contain .admin-theme, so the public and
+ * customer pages are untouched.
+ * The shared shadcn/brand tokens are remapped too, so existing components pick up the theme.
+ * ----------------------------------------------------------------------------------------- */
+.admin-theme,
+body:has(.admin-theme) {
+  --admin-frame: #0e0f12;
+  --admin-bg: #16181c;
+  --admin-panel: #22252b;
+  --admin-panel-2: #2b2f36;
+  --admin-border: rgb(255 255 255 / 0.08);
+  --admin-text: #f4f5f7;
+  --admin-muted: #8a8f98;
+  --admin-accent: #c5f82a;
+  --admin-accent-hover: #d4ff5c;
+  --admin-accent-ink: #0e0f12;
+  --admin-light: #ffffff;
+  --admin-light-text: #15171b;
+  --admin-light-muted: #6b7280;
+  /* Form control borders: 40% white is the lowest that meets 3:1 on panels. */
+  --admin-control-border: rgb(255 255 255 / 0.4);
+
+  --status-pending: #f5b544;
+  --status-confirmed: #5aa9ff;
+  --status-completed: #c5f82a;
+  --status-cancelled: #8a8f98;
+  --admin-danger: #ff5a5f;
+
+  /* Remap shared tokens. Popovers use --admin-panel: muted text fails AA on panel-2. */
+  --brand-ink: var(--admin-text);
+  --brand-muted: var(--admin-muted);
+  --brand-surface: var(--admin-panel);
+  --brand-background: var(--admin-bg);
+  --brand-border: var(--admin-border);
+  --brand-primary: var(--admin-accent);
+  --brand-primary-hover: var(--admin-accent-hover);
+  --brand-accent: var(--status-pending);
+  --brand-danger: var(--admin-danger);
+  --background: var(--admin-bg);
+  --foreground: var(--admin-text);
+  --card: var(--admin-panel);
+  --card-foreground: var(--admin-text);
+  --popover: var(--admin-panel);
+  --popover-foreground: var(--admin-text);
+  --primary: var(--admin-accent);
+  --primary-foreground: var(--admin-accent-ink);
+  --secondary: var(--admin-panel-2);
+  --secondary-foreground: var(--admin-text);
+  --muted: var(--admin-panel-2);
+  --muted-foreground: var(--admin-muted);
+  --accent: var(--admin-panel-2);
+  --accent-foreground: var(--admin-text);
+  --destructive: var(--admin-danger);
+  /* White on #FF5A5F is 3.05:1; the dark frame color is 6.28:1. */
+  --destructive-foreground: var(--admin-frame);
+  --border: var(--admin-border);
+  --input: var(--admin-control-border);
+  --ring: var(--admin-accent);
+  color-scheme: dark;
+}
+
+.admin-theme {
+  background: var(--admin-frame);
+  color: var(--admin-text);
+}
+
+/* White surfaces inside the admin (LightPanel, pill nav). Lime never appears as text here and
+   focus rings turn dark, because lime on white is 1.25:1. */
+.admin-light {
+  --brand-ink: var(--admin-light-text);
+  --brand-muted: var(--admin-light-muted);
+  --brand-surface: var(--admin-light);
+  --brand-background: #f9fafb;
+  --brand-border: #e5e7eb;
+  --brand-danger: #dc2626;
+  --background: #f9fafb;
+  --foreground: var(--admin-light-text);
+  --card: var(--admin-light);
+  --card-foreground: var(--admin-light-text);
+  --muted: #f3f4f6;
+  --muted-foreground: var(--admin-light-muted);
+  --accent: #f3f4f6;
+  --accent-foreground: var(--admin-light-text);
+  --secondary: #f3f4f6;
+  --secondary-foreground: var(--admin-light-text);
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #8b95a5;
+  --ring: var(--admin-light-text);
+  color-scheme: light;
+  color: var(--admin-light-text);
+}
+
+/* Avatar backgrounds: all light enough for dark initials (>= 7:1 with --admin-accent-ink). */
+.admin-theme,
+body:has(.admin-theme) {
+  --avatar-1: #c5f82a;
+  --avatar-2: #f5b544;
+  --avatar-3: #5aa9ff;
+  --avatar-4: #ff9eb5;
+  --avatar-5: #7ee0c3;
+  --avatar-6: #c7b8ff;
+}
+
+/* Outlined status pill. Status colors are readable on dark panels only (1.25-3.25:1 on
+   white), so inside white panels the text turns dark and the color stays on the dot/border. */
+.status-pill {
+  color: var(--pill);
+  border-color: color-mix(in srgb, var(--pill) 55%, transparent);
+}
+.admin-light .status-pill {
+  color: var(--admin-light-text);
+  border-color: var(--pill);
+}
+
+/* Admin focus: a solid 2px outline everywhere (lime on dark; dark inside .admin-light).
+   Unlayered, so it beats the utilities' outline-none on shared controls. */
+body:has(.admin-theme) :focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Toasts are portaled to <body>; match them to the dark panels on admin pages. */
+body:has(.admin-theme) [data-sonner-toaster] {
+  --normal-bg: var(--admin-panel);
+  --normal-text: var(--admin-text);
+  --normal-border: var(--admin-border);
+  --success-bg: var(--admin-panel);
+  --success-text: var(--admin-accent);
+  --success-border: var(--admin-border);
+  --error-bg: var(--admin-panel);
+  --error-text: var(--admin-danger);
+  --error-border: var(--admin-border);
 }
 
 @layer base {

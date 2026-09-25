@@ -63,7 +63,9 @@ export function ConfirmDialog({
           <AlertDialogAction
             onClick={confirm}
             disabled={pending}
-            className={cn(destructive && "bg-danger hover:bg-danger/90 text-white")}
+            className={cn(
+              destructive && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            )}
           >
             {pending && <LoaderCircle className="animate-spin" aria-hidden="true" />}
             {pending ? pendingLabel : confirmLabel}

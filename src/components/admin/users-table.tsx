@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminEmpty, TableShell, rowClass, tdClass, thClass } from "@/components/admin/admin-table";
+import { InitialsAvatar } from "@/components/admin/avatar";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
-import { StatusBadge } from "@/components/bookings/status-badge";
+import { ActivePill, StatusPill } from "@/components/admin/status-pill";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -27,25 +28,6 @@ type DetailState =
   | { status: "loading" }
   | { status: "error"; message: string }
   | { status: "ready"; user: UserWithBookingsDTO };
-
-function ActiveBadge({ active }: { active: boolean }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset",
-        active
-          ? "bg-green-50 text-green-700 ring-green-600/20"
-          : "bg-slate-100 text-slate-600 ring-slate-500/20",
-      )}
-    >
-      <span
-        className={cn("size-1.5 rounded-full", active ? "bg-green-600" : "bg-slate-400")}
-        aria-hidden="true"
-      />
-      {active ? "Active" : "Inactive"}
-    </span>
-  );
-}
 
 function UserBookings({ userId, refreshKey }: { userId: string; refreshKey: number }) {
   const [state, setState] = useState<DetailState>({ status: "loading" });
@@ -121,7 +103,7 @@ function UserBookings({ userId, refreshKey }: { userId: string; refreshKey: numb
           <li key={b.id} className="border-border rounded-control space-y-1 border p-3">
             <div className="flex items-start justify-between gap-2">
               <p className="text-ink text-sm font-medium">{b.service.name}</p>
-              <StatusBadge status={b.status} />
+              <StatusPill status={b.status} />
             </div>
             <p className="text-muted-foreground text-xs">
               {formatDate(b.bookingDate)} · {formatTime(b.bookingTime)} ·{" "}
@@ -173,7 +155,7 @@ export function UsersTable({ users, hasFilters, total }: UsersTableProps) {
     <Button
       variant={u.isActive ? "outline" : "default"}
       size="sm"
-      className={cn(u.isActive && "text-danger hover:text-danger", className)}
+      className={cn("rounded-full", u.isActive && "text-danger hover:text-danger", className)}
       onClick={(e) => {
         e.stopPropagation();
         setToggling(u);
@@ -187,7 +169,7 @@ export function UsersTable({ users, hasFilters, total }: UsersTableProps) {
 
   return (
     <>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-admin-muted text-[13px]" aria-live="polite">
         {total} {total === 1 ? "customer" : "customers"}
       </p>
       <TableShell label="Customers">
@@ -217,8 +199,13 @@ export function UsersTable({ users, hasFilters, total }: UsersTableProps) {
               }}
             >
               <td className={tdClass}>
-                <p className="text-ink font-medium">{u.name}</p>
-                <p className="text-muted-foreground text-xs">{u.email}</p>
+                <div className="flex items-center gap-3">
+                  <InitialsAvatar name={u.name} size="sm" decorative />
+                  <div className="min-w-0">
+                    <p className="text-ink font-medium">{u.name}</p>
+                    <p className="text-muted-foreground text-xs">{u.email}</p>
+                  </div>
+                </div>
               </td>
               <td className={`${tdClass} whitespace-nowrap`}>{u.phone ?? "—"}</td>
               <td className={`${tdClass} whitespace-nowrap`}>
@@ -226,7 +213,7 @@ export function UsersTable({ users, hasFilters, total }: UsersTableProps) {
               </td>
               <td className={`${tdClass} text-right font-medium`}>{u.bookingCount}</td>
               <td className={tdClass}>
-                <ActiveBadge active={u.isActive} />
+                <ActivePill active={u.isActive} />
               </td>
               <td className={`${tdClass} text-right`}>{toggleButton(u)}</td>
             </tr>
@@ -247,7 +234,7 @@ export function UsersTable({ users, hasFilters, total }: UsersTableProps) {
               <div className="space-y-6 px-4 pb-6">
                 <section className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
-                    <ActiveBadge active={selected.isActive} />
+                    <ActivePill active={selected.isActive} />
                     {toggleButton(selected)}
                   </div>
                   <p className="text-muted-foreground flex items-center gap-2 text-sm">

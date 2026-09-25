@@ -33,7 +33,7 @@ src/components/ui/     shadcn/ui primitives (generated; edit sparingly)
 src/components/layout/ header, footer, nav, shells
 src/components/auth/   auth card, login/register forms, form field
 src/components/profile/ profile and change-password forms
-src/components/admin/  sidebar/topbar, URL-synced filters, tables, dialogs, charts (recharts)
+src/components/admin/  admin theme: top bar + pill nav, panels, filter bar, pill tabs, tables, dialogs, charts
 src/components/services/
 src/components/bookings/
 src/components/admin/
@@ -98,6 +98,29 @@ docs/                  project documentation
 - Radius: **10px on cards** (`rounded-card`), **8px on inputs and buttons** (`rounded-control`).
 - Mobile-first. Breakpoints: `sm` 640, `md` 768, `lg` 1024 (Tailwind defaults).
 - Tokens live in `src/app/globals.css`; never hardcode hex values in components.
+
+## Admin theme
+
+`/admin` has its own dark theme. Variables are scoped under `.admin-theme` on the admin layout root (`src/app/admin/layout.tsx`) and also on `body:has(.admin-theme)`, so portaled dialogs, sheets, menus and toasts pick them up. Public, auth and customer pages never see them. Inside `.admin-theme` the shared tokens (`--primary`, `--card`, `--brand-ink`...) are remapped, so shared components theme automatically.
+
+| Token                                                          | Value                                                                                              | Use                               |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `--admin-frame`                                                | `#0E0F12`                                                                                          | page background around the canvas |
+| `--admin-bg`                                                   | `#16181C`                                                                                          | main canvas (radius 28px)         |
+| `--admin-panel` / `--admin-panel-2`                            | `#22252B` / `#2B2F36`                                                                              | dark panels / raised items        |
+| `--admin-border`                                               | `rgba(255,255,255,0.08)`                                                                           | panel borders                     |
+| `--admin-text` / `--admin-muted`                               | `#F4F5F7` / `#8A8F98`                                                                              | text on dark                      |
+| `--admin-accent` / `--admin-accent-ink`                        | `#C5F82A` / `#0E0F12`                                                                              | lime background / text on lime    |
+| `--admin-light` / `--admin-light-text` / `--admin-light-muted` | `#FFFFFF` / `#15171B` / `#6B7280`                                                                  | white panels                      |
+| Status                                                         | PENDING `#F5B544`, CONFIRMED `#5AA9FF`, COMPLETED `#C5F82A`, CANCELLED `#8A8F98`, danger `#FF5A5F` | `--status-*`, `--admin-danger`    |
+
+- Radius: canvas 28px (`rounded-canvas`), panels 24px (`rounded-panel`), inner cards 18px (`rounded-inner`), pills `rounded-full`.
+- Type: Plus Jakarta Sans. Page title 44px / 400 / -0.02em (32px on mobile); stat numbers 30px / 500; labels 13px muted.
+- Utilities: `bg-admin-panel`, `text-admin-muted`, `bg-admin-accent text-admin-accent-ink`, etc. No hex values in components.
+- White surfaces use `.admin-light` (`LightPanel`, `TableShell`, the pill nav): tokens flip back to light and focus rings turn dark.
+- Contrast rules (measured): lime is **only** a background with dark text, never text on white (1.25:1). Status colors are text only on dark panels; on white, `StatusPill` shows dark text with a colored dot/border. Muted text never sits on `--admin-panel-2` (4.14:1). Danger buttons use dark text on `#FF5A5F` (`--destructive-foreground`).
+- Focus: 2px outline in `--ring` (lime on dark, dark inside `.admin-light`).
+- Components (`src/components/admin/`): `Panel`, `LightPanel`, `StatCard`, `PillTabs` (+ `tabHref`), `FilterBar`, `StatusPill` / `ActivePill`, `InitialsAvatar` / `AvatarStack` (no remote photos), `PageActions` (renders into the title row's action slot).
 
 ## Booking status rules
 

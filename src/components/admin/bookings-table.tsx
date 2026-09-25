@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AdminEmpty, TableShell, rowClass, tdClass, thClass } from "@/components/admin/admin-table";
+import { InitialsAvatar } from "@/components/admin/avatar";
 import { BookingStatusSelect } from "@/components/admin/booking-status-select";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { StatusPill } from "@/components/admin/status-pill";
 import { BookingTimeline } from "@/components/bookings/booking-timeline";
-import { StatusBadge } from "@/components/bookings/status-badge";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -67,7 +68,7 @@ export function BookingsTable({ bookings, hasFilters, total }: BookingsTableProp
 
   return (
     <>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-admin-muted text-[13px]" aria-live="polite">
         {total} {total === 1 ? "booking" : "bookings"}
       </p>
       <TableShell label="Bookings">
@@ -97,8 +98,13 @@ export function BookingsTable({ bookings, hasFilters, total }: BookingsTableProp
               }}
             >
               <td className={tdClass}>
-                <p className="text-ink font-medium">{b.user?.name}</p>
-                <p className="text-muted-foreground text-xs">{b.user?.email}</p>
+                <div className="flex items-center gap-3">
+                  <InitialsAvatar name={b.user?.name ?? "?"} size="sm" decorative />
+                  <div className="min-w-0">
+                    <p className="text-ink font-medium">{b.user?.name}</p>
+                    <p className="text-muted-foreground text-xs">{b.user?.email}</p>
+                  </div>
+                </div>
               </td>
               <td className={`${tdClass} max-w-56`}>
                 <span className="line-clamp-2">{b.service.name}</span>
@@ -131,7 +137,7 @@ export function BookingsTable({ bookings, hasFilters, total }: BookingsTableProp
               </SheetHeader>
               <div className="space-y-6 px-4 pb-6">
                 <div className="flex items-center justify-between gap-3">
-                  <StatusBadge status={selected.status} />
+                  <StatusPill status={selected.status} />
                   <BookingStatusSelect
                     bookingId={selected.id}
                     status={selected.status}
@@ -189,7 +195,7 @@ export function BookingsTable({ bookings, hasFilters, total }: BookingsTableProp
 
                 <Button
                   variant="destructive"
-                  className="h-10 w-full"
+                  className="w-full rounded-full"
                   onClick={() => setConfirmDelete(true)}
                 >
                   <Trash2 aria-hidden="true" />
