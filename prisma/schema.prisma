@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  email        String    @unique
+  passwordHash String
+  phone        String?
+  role         Role      @default(CUSTOMER)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  bookings     Booking[]
+}
+
+model Category {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  services  Service[]
+}
+
+model Service {
+  id              String        @id @default(uuid()) @db.Uuid
+  categoryId      String        @db.Uuid
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  name            String
+  description     String
+  price           Decimal       @db.Decimal(10, 2)
+  durationMinutes Int           @default(60)
+  imageUrl        String?
+  status          ServiceStatus @default(ACTIVE)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  bookings        Booking[]
+
+  @@index([categoryId])
+  @@index([status])
+}
+
+model Booking {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @db.Uuid
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId   String        @db.Uuid
+  service     Service       @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  bookingDate DateTime      @db.Date
+  /// 24h time in "HH:mm" format
+  bookingTime String
+  status      BookingStatus @default(PENDING)
+  /// Snapshot of Service.price at booking time
+  totalPrice  Decimal       @db.Decimal(10, 2)
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([serviceId])
+  @@index([status])
+  @@index([bookingDate])
+}

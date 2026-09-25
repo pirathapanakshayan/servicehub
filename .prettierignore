@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+build
+coverage
+package-lock.json
+prisma/migrations
+src/components/ui
+test-results
+playwright-report
+blob-report
