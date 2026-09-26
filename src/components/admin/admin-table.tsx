@@ -12,7 +12,7 @@ type TableShellProps = {
 /** White panel (LightPanel styling) holding a table that scrolls horizontally when narrow. */
 export function TableShell({ children, label, minWidth = "md" }: TableShellProps) {
   return (
-    <div className="admin-light bg-admin-light rounded-panel min-w-0 overflow-hidden p-2 sm:p-3">
+    <div className="light-surface bg-admin-light rounded-panel min-w-0 overflow-hidden p-2 sm:p-3">
       <div className="overflow-x-auto">
         <table
           className={cn("w-full text-sm", minWidth === "md" ? "min-w-[720px]" : "min-w-[540px]")}
@@ -61,7 +61,7 @@ export function AdminEmpty({
 
 export function TableSkeleton({ rows = 8, columns = 6 }: { rows?: number; columns?: number }) {
   return (
-    <div className="admin-light bg-admin-light rounded-panel p-2 sm:p-3" aria-hidden="true">
+    <div className="light-surface bg-admin-light rounded-panel p-2 sm:p-3" aria-hidden="true">
       <div className="border-border flex gap-4 border-b px-4 py-3">
         {Array.from({ length: columns }, (_, i) => (
           <Skeleton key={i} className="h-3.5 flex-1" />

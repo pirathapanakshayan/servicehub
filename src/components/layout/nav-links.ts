@@ -1,5 +1,12 @@
 import { CalendarCheck, LayoutDashboard, UserRound, type LucideIcon } from "lucide-react";
 
+/** Public site links: navbar (desktop + mobile sheet) and footer. */
+export const SITE_LINKS = [
+  { href: "/services", label: "Services" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/admin/login", label: "For admins" },
+] as const;
+
 export type NavUser = { name: string; role: "CUSTOMER" | "ADMIN" };
 
 export type AccountLink = { href: string; label: string; icon: LucideIcon };

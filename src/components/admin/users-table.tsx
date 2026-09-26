@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { AdminEmpty, TableShell, rowClass, tdClass, thClass } from "@/components/admin/admin-table";
 import { InitialsAvatar } from "@/components/admin/avatar";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
-import { ActivePill, StatusPill } from "@/components/admin/status-pill";
+import { ActivePill, StatusPill } from "@/components/ui/status-pill";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,

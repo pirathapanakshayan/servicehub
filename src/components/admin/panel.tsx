@@ -34,15 +34,3 @@ export function Panel({ title, action, children, className, as }: PanelProps) {
     </section>
   );
 }
-
-/** White panel for lists and tables. Re-scopes tokens to light (see .admin-light). */
-export function LightPanel({ title, action, children, className, as }: PanelProps) {
-  return (
-    <section
-      className={cn("admin-light bg-admin-light rounded-panel min-w-0 p-5 sm:p-6", className)}
-    >
-      <PanelHeader title={title} action={action} as={as} />
-      {children}
-    </section>
-  );
-}

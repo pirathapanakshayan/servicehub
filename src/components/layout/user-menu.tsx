@@ -22,7 +22,7 @@ export function UserMenu({ user }: { user: NavUser }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button variant="ghost" className="h-10 gap-2 px-2" />}
+        render={<Button variant="ghost" className="gap-2 pr-4 pl-1.5" />}
         aria-label="Open account menu"
       >
         <Avatar className="size-8">
@@ -30,7 +30,7 @@ export function UserMenu({ user }: { user: NavUser }) {
             {initials(user.name)}
           </AvatarFallback>
         </Avatar>
-        <span className="text-ink max-w-32 truncate text-sm font-medium">{user.name}</span>
+        <span className="text-foreground max-w-32 truncate text-sm font-medium">{user.name}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuGroup>

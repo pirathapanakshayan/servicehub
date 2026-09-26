@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, ExternalLink, LogOut, Settings, Star, UserRound } from "lucide-react";
+import { Bell, ExternalLink, LogOut, Settings, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { ADMIN_LINKS } from "@/components/admin/admin-links";
 import { InitialsAvatar } from "@/components/admin/avatar";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,15 +62,7 @@ export function AdminTopbar({ adminName }: { adminName: string }) {
 
   return (
     <header className="flex flex-wrap items-center gap-3 md:flex-nowrap">
-      <Link
-        href="/admin/dashboard"
-        className="text-admin-text flex shrink-0 items-center gap-2 rounded-full pr-2 text-lg font-semibold tracking-tight"
-      >
-        <span className="bg-admin-accent text-admin-accent-ink flex size-8 items-center justify-center rounded-full">
-          <Star className="size-4 fill-current" aria-hidden="true" />
-        </span>
-        ServiceHub
-      </Link>
+      <BrandLogo href="/admin/dashboard" />
 
       {/* Below md the pill nav takes its own row and scrolls horizontally. */}
       <nav
@@ -77,7 +70,7 @@ export function AdminTopbar({ adminName }: { adminName: string }) {
         aria-label="Admin"
         className="order-last w-full [scrollbar-width:none] overflow-x-auto md:order-none md:flex md:flex-1 md:justify-center"
       >
-        <ul className="admin-light bg-admin-light inline-flex gap-1 rounded-full p-1">
+        <ul className="light-surface bg-admin-light inline-flex gap-1 rounded-full p-1">
           {ADMIN_LINKS.map(({ href, label }) => {
             const active = pathname.startsWith(href);
             return (

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
-import { STATUS_VAR } from "@/components/admin/status-pill";
+import { STATUS_VAR } from "@/components/ui/status-pill";
 import { STATUS_LABELS } from "@/components/bookings/status-badge";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 import { nextStatuses, type BookingStatus } from "@/lib/booking-rules";

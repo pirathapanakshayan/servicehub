@@ -1,10 +1,9 @@
 "use client";
 
-import { LogOut, Menu, Sparkles } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -13,12 +12,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { accountLinks, type NavUser } from "@/components/layout/nav-links";
+import { accountLinks, SITE_LINKS, type NavUser } from "@/components/layout/nav-links";
 import { useLogout } from "@/components/layout/use-logout";
 
-const linkClass =
-  "text-ink hover:bg-muted flex h-11 items-center gap-3 rounded-control px-3 text-sm font-medium";
+const bigLink =
+  "text-foreground hover:bg-card flex min-h-14 items-center rounded-card px-4 text-h3 font-medium transition-colors";
 
+/** Circular menu button (below md) opening a full-height dark sheet with large links. */
 export function MobileNav({ user }: { user: NavUser | null }) {
   const [open, setOpen] = useState(false);
   const { logout, pending } = useLogout();
@@ -27,40 +27,45 @@ export function MobileNav({ user }: { user: NavUser | null }) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        render={<Button variant="ghost" size="icon-lg" className="md:hidden" />}
+        render={<Button variant="icon" size="icon" className="md:hidden" />}
         aria-label="Open menu"
       >
         <Menu />
       </SheetTrigger>
-      <SheetContent side="right" className="w-72">
-        <SheetHeader>
-          <SheetTitle className="text-primary font-bold">ServiceHub</SheetTitle>
+      <SheetContent
+        side="right"
+        className="bg-background gap-0 border-0 data-[side=right]:w-full data-[side=right]:sm:max-w-md"
+      >
+        <SheetHeader className="px-6 pt-6">
+          <SheetTitle className="text-h2! font-medium">Menu</SheetTitle>
           <SheetDescription>
-            {user ? `Signed in as ${user.name}` : "Book trusted services"}
+            {user ? `Signed in as ${user.name}` : "Book trusted local services"}
           </SheetDescription>
         </SheetHeader>
-        <nav className="flex flex-col gap-1 px-4" aria-label="Mobile">
-          <Link href="/services" className={linkClass} onClick={close}>
-            <Sparkles className="size-4" aria-hidden="true" />
-            Services
-          </Link>
+
+        <nav className="flex flex-col gap-1 px-3 py-4" aria-label="Mobile">
+          {SITE_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} className={bigLink} onClick={close}>
+              {link.label}
+            </Link>
+          ))}
           {user && (
             <>
-              <Separator className="my-2" />
-              {accountLinks(user).map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} className={linkClass} onClick={close}>
-                  <Icon className="size-4" aria-hidden="true" />
+              <p className="text-muted-foreground text-label mt-4 px-4 pb-1 font-medium">Account</p>
+              {accountLinks(user).map(({ href, label }) => (
+                <Link key={href} href={href} className={bigLink} onClick={close}>
                   {label}
                 </Link>
               ))}
             </>
           )}
         </nav>
-        <div className="mt-auto flex flex-col gap-2 p-4">
+
+        <div className="mt-auto flex flex-col gap-2 p-6">
           {user ? (
             <Button
-              variant="outline"
-              className="h-10"
+              variant="ghost"
+              size="lg"
               disabled={pending}
               onClick={async () => {
                 await logout();
@@ -75,14 +80,14 @@ export function MobileNav({ user }: { user: NavUser | null }) {
               <Link
                 href="/login"
                 onClick={close}
-                className={buttonVariants({ variant: "outline", className: "h-10" })}
+                className={buttonVariants({ variant: "ghost", size: "lg" })}
               >
                 Login
               </Link>
               <Link
                 href="/register"
                 onClick={close}
-                className={buttonVariants({ className: "h-10" })}
+                className={buttonVariants({ variant: "primary", size: "lg" })}
               >
                 Register
               </Link>

@@ -29,7 +29,7 @@ export default function AdminDashboardLoading() {
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-64 w-full" />
         </div>
-        <div className="admin-light bg-admin-light rounded-panel space-y-4 p-6">
+        <div className="light-surface bg-admin-light rounded-panel space-y-4 p-6">
           <Skeleton className="h-6 w-40" />
           {Array.from({ length: 5 }, (_, i) => (
             <Skeleton key={i} className="h-12 w-full" />

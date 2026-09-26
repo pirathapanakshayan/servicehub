@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 export function BookingsEmpty({ message }: { message: string }) {
   return (
-    <div className="border-border bg-card rounded-card flex flex-col items-center gap-3 border border-dashed px-6 py-16 text-center">
+    <div className="bg-card rounded-card shadow-surface flex flex-col items-center gap-3 px-6 py-16 text-center">
       <div className="bg-primary/10 text-primary rounded-full p-3">
         <CalendarX className="size-6" aria-hidden="true" />
       </div>

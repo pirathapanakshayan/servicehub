@@ -85,7 +85,11 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section className="bg-card border-border border-y" aria-labelledby="how-heading">
+      <section
+        id="how-it-works"
+        className="bg-card border-border scroll-mt-28 border-y"
+        aria-labelledby="how-heading"
+      >
         <div className="mx-auto max-w-6xl px-4 py-14">
           <div className="mb-8 space-y-1 text-center">
             <h2 id="how-heading" className="text-ink text-2xl font-bold">

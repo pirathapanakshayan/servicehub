@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { SITE_LINKS, type NavUser } from "@/components/layout/nav-links";
+import { NavShell } from "@/components/layout/nav-shell";
 import { UserMenu } from "@/components/layout/user-menu";
-import type { NavUser } from "@/components/layout/nav-links";
+import { buttonVariants } from "@/components/ui/button";
 import { getSession } from "@/lib/auth";
 
 export async function Navbar() {
@@ -10,42 +12,40 @@ export async function Navbar() {
   const user: NavUser | null = session ? { name: session.name, role: session.role } : null;
 
   return (
-    <header className="bg-surface/90 border-border sticky top-0 z-40 border-b backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="text-primary text-xl font-bold tracking-tight">
-            ServiceHub
-          </Link>
-          <nav className="hidden md:block" aria-label="Main">
-            <Link
-              href="/services"
-              className="text-muted-foreground hover:text-ink text-sm font-medium transition-colors"
-            >
-              Services
-            </Link>
-          </nav>
-        </div>
+    <NavShell>
+      <BrandLogo />
 
-        <div className="hidden items-center gap-2 md:flex">
-          {user ? (
-            <UserMenu user={user} />
-          ) : (
-            <>
+      <nav className="hidden md:block" aria-label="Main">
+        <ul className="flex items-center gap-1">
+          {SITE_LINKS.map((link) => (
+            <li key={link.href}>
               <Link
-                href="/login"
-                className={buttonVariants({ variant: "ghost", className: "h-9" })}
+                href={link.href}
+                className="text-muted-foreground hover:text-foreground hover:bg-secondary flex h-9 items-center rounded-full px-4 text-sm font-medium transition-colors"
               >
-                Login
+                {link.label}
               </Link>
-              <Link href="/register" className={buttonVariants({ className: "h-9" })}>
-                Register
-              </Link>
-            </>
-          )}
-        </div>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-        <MobileNav user={user} />
+      <div className="hidden items-center gap-2 md:flex">
+        {user ? (
+          <UserMenu user={user} />
+        ) : (
+          <>
+            <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
+              Login
+            </Link>
+            <Link href="/register" className={buttonVariants({ variant: "primary" })}>
+              Register
+            </Link>
+          </>
+        )}
       </div>
-    </header>
+
+      <MobileNav user={user} />
+    </NavShell>
   );
 }

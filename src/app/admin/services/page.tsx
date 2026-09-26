@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FilterBar } from "@/components/admin/filter-bar";
-import { PillTabs, tabHref } from "@/components/admin/pill-tabs";
+import { PillTabs } from "@/components/ui/pill-tabs";
+import { tabHref } from "@/lib/url";
 import { ServicesTable } from "@/components/admin/services-table";
 import { Pagination } from "@/components/services/pagination";
 import { requirePageAdmin } from "@/lib/auth";

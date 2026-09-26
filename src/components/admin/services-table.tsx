@@ -167,7 +167,7 @@ export function ServicesTable({ services, categories, hasFilters, total }: Servi
                   <td className={`${tdClass} text-right whitespace-nowrap`}>
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="icon-sm"
                       aria-label={`Edit ${s.name}`}
                       onClick={() => {
                         setEditing(s);
@@ -178,7 +178,7 @@ export function ServicesTable({ services, categories, hasFilters, total }: Servi
                     </Button>
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="icon-sm"
                       className="text-danger hover:text-danger hover:bg-danger/10"
                       aria-label={`Delete ${s.name}`}
                       onClick={() => setDeleting(s)}

@@ -68,8 +68,8 @@ docs/                  project documentation
 - `bookingDate` is a date-only column; `bookingTime` is a `"HH:mm"` 24h string.
 - Feedback for mutations uses sonner toasts.
 - Page titles on public/customer pages use `<PageHeader>` (one `<h1>` per page; headings never skip a level). Admin pages get their `<h1>` from the top bar.
-- Controls: `<Button>` and `<Input>` default to 40px (`h-10`); native `<select>` uses `nativeSelectClass`; destructive actions use `variant="destructive"` (solid red) inside a confirm dialog.
-- Contrast: never put `text-muted-foreground` on `bg-muted` (fails AA); status colors come from `STATUS_STYLES`.
+- Controls: `<Button>` and `<Input>` default to 40px (`h-10`) pills; native selects use `<Select>` (or `nativeSelectClass`); destructive actions use `variant="destructive"` inside a confirm dialog.
+- Contrast: never put `text-muted-foreground` on `bg-muted`/`--surface-2` (4.14:1, fails AA). Booking status is shown with `StatusPill` (`src/components/ui/status-pill.tsx`).
 - Wide tables go in `<TableShell>` (horizontal scroll); inside CSS grids give the cell `min-w-0`.
 - `loading.tsx` only on list pages (use a route group like `services/(list)`), never above a `[id]` page that calls `notFound()`: streaming would turn the 404 into a 200.
 - Public routes that show admins extra data use `isAdminViewer()` (DB-checked), not the token role.
@@ -80,28 +80,42 @@ docs/                  project documentation
 - Server Components query Prisma through `src/lib/*` data functions; route handlers reuse the same functions.
 - No `any`; no unused code; no TODOs in committed code.
 
-## Design tokens
+## Brand
 
-| Token         | Value     | Tailwind usage                  |
-| ------------- | --------- | ------------------------------- |
-| primary       | `#0F766E` | `bg-primary`, `text-primary`    |
-| primary-hover | `#115E59` | `hover:bg-primary-hover`        |
-| ink           | `#0F172A` | `text-ink` / `text-foreground`  |
-| muted         | `#64748B` | `text-muted-foreground`         |
-| surface       | `#FFFFFF` | `bg-surface` / `bg-card`        |
-| background    | `#F8FAFC` | `bg-background`                 |
-| border        | `#E2E8F0` | `border-border`                 |
-| accent        | `#F59E0B` | `bg-warning`, `text-warning`    |
-| danger        | `#DC2626` | `bg-destructive`, `text-danger` |
+One brand for the site and the admin panel: dark, charcoal surfaces with a single lime accent. Tokens live in `src/app/globals.css`; never hardcode hex values in components.
 
-- Font: **Plus Jakarta Sans** via `next/font/google` (CSS var `--font-jakarta`, wired to `font-sans`).
-- Radius: **10px on cards** (`rounded-card`), **8px on inputs and buttons** (`rounded-control`).
-- Mobile-first. Breakpoints: `sm` 640, `md` 768, `lg` 1024 (Tailwind defaults).
-- Tokens live in `src/app/globals.css`; never hardcode hex values in components.
+The palette is namespaced `--brand-*` because shadcn already uses `--muted`, `--accent` and `--border` with other meanings. The shadcn tokens (`--background`, `--card`, `--primary`, `--muted-foreground`, `--border`, `--input`, `--ring`...) are mapped onto it in `:root`, so shared components follow the brand.
+
+| Spec name        | Token                                            | Value                                         | Tailwind                                      |
+| ---------------- | ------------------------------------------------ | --------------------------------------------- | --------------------------------------------- |
+| bg               | `--brand-bg`                                     | `#0B0C0F`                                     | `bg-background` (page body)                   |
+| surface          | `--brand-surface`                                | `#16181C`                                     | `bg-card`, `bg-surface`                       |
+| surface-2        | `--brand-surface-2`                              | `#1F2228`                                     | `bg-secondary`, `bg-muted`, `bg-surface-2`    |
+| border           | `--brand-hairline`                               | `rgba(255,255,255,0.08)`                      | `border-border`                               |
+| text             | `--brand-text`                                   | `#F4F5F7`                                     | `text-foreground`, `text-ink`                 |
+| muted            | `--brand-muted`                                  | `#8A8F98`                                     | `text-muted-foreground`                       |
+| accent           | `--brand-accent`                                 | `#C5F82A`                                     | `bg-primary`                                  |
+| accent-ink       | `--brand-accent-ink`                             | `#0E0F12`                                     | `text-primary-foreground`                     |
+| light            | `--brand-light`                                  | `#FFFFFF`                                     | `bg-light`                                    |
+| light-text       | `--brand-light-text`                             | `#15171B`                                     | `text-light-text`                             |
+| light-muted      | `--brand-light-muted`                            | `#6B7280`                                     | `text-light-muted`                            |
+| danger / warning | `--brand-danger` / `--brand-warning`             | `#FF5A5F` / `#F5B544`                         | `bg-destructive`, `text-danger`, `bg-warning` |
+| status           | `--status-pending/confirmed/completed/cancelled` | `#F5B544` / `#5AA9FF` / `#C5F82A` / `#8A8F98` | `StatusPill`                                  |
+
+- **Fonts** (`next/font`): Plus Jakarta Sans for everything (`font-sans`). Instrument Serif italic (`font-serif`) only for one accent word inside a big heading, via `<SerifAccent>`: "Book trusted services in <SerifAccent>minutes</SerifAccent>".
+- **Type scale**: `text-display` clamp(2.8rem, 7vw, 5.5rem) / 500 / -0.03em; `text-h1` 44px; `text-h2` 32px; `text-h3` 20px; body 16px; small `text-sm` 14px; labels `text-label` 13px muted (the `<Label>` default).
+- **Radius**: sections 32px (`rounded-section`), cards 24px (`rounded-card`), inputs and buttons are pills (`rounded-control` = 999px). Textareas use 24px (a pill can't hold multiple lines).
+- **Depth**: no borders except `--border` hairlines. Surfaces separate by fill contrast plus a top highlight, `shadow-surface` (inset 0 1px 0 rgba(255,255,255,0.04)).
+- **Lime** is only ever a background with dark text, never text on white (1.25:1). On dark surfaces lime icons and accents are fine.
+- **White surfaces**: wrap them in `.light-surface` (`LightPanel` does this). Tokens flip to light, focus rings turn dark and status pills switch to dark text.
+- **Buttons**: `primary` (lime pill, dark text; pass `arrow` for the arrow that nudges right on hover, or put `<ButtonArrow />` inside a `buttonVariants()` link), `secondary` (white pill), `ghost` (surface pill), `icon` (circular; with `size="icon"`), plus `outline`, `destructive`, `link`. Destructive text is dark on `#FF5A5F` (white would be 3.05:1).
+- **Shared components**: `LightPanel`, `StatusPill`/`ActivePill`, `PillTabs` (sliding lime indicator; build hrefs with `tabHref` from `src/lib/url.ts`), `SectionHeader` (lime-dot eyebrow, title, action), `SerifAccent`, `Select`, all in `src/components/ui`. The admin reuses them.
+- **Layout**: floating pill navbar (`NavShell`: 16px from top, max-width 1200px, blurred `bg-card/70`, shrinks and gains a shadow after 24px of scroll), full-height mobile sheet, and a dark footer with 32px top corners and a clipped wordmark. Page body is `--brand-bg`.
+- **Motion**: short and functional (150–200ms): arrow nudge, navbar shrink, tab indicator slide. Everything respects `prefers-reduced-motion` (`motion-reduce:transition-none`).
 
 ## Admin theme
 
-`/admin` has its own dark theme. Variables are scoped under `.admin-theme` on the admin layout root (`src/app/admin/layout.tsx`) and also on `body:has(.admin-theme)`, so portaled dialogs, sheets, menus and toasts pick them up. Public, auth and customer pages never see them. Inside `.admin-theme` the shared tokens (`--primary`, `--card`, `--brand-ink`...) are remapped, so shared components theme automatically.
+`/admin` has its own dark theme built on the Brand tokens: admin text, muted, lime, ink, light colors, border and the canvas (`--admin-bg` = `--brand-surface`) reference `--brand-*`; only the frame and panel colors are admin-specific. Variables are scoped under `.admin-theme` on the admin layout root (`src/app/admin/layout.tsx`) and also on `body:has(.admin-theme)`, so portaled dialogs, sheets, menus and toasts pick them up. Public, auth and customer pages never see them. Inside `.admin-theme` the shared tokens (`--primary`, `--card`, `--brand-ink`...) are remapped, so shared components theme automatically.
 
 | Token                                                          | Value                                                                                              | Use                               |
 | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------- |
@@ -117,10 +131,10 @@ docs/                  project documentation
 - Radius: canvas 28px (`rounded-canvas`), panels 24px (`rounded-panel`), inner cards 18px (`rounded-inner`), pills `rounded-full`.
 - Type: Plus Jakarta Sans. Page title 44px / 400 / -0.02em (32px on mobile); stat numbers 30px / 500; labels 13px muted.
 - Utilities: `bg-admin-panel`, `text-admin-muted`, `bg-admin-accent text-admin-accent-ink`, etc. No hex values in components.
-- White surfaces use `.admin-light` (`LightPanel`, `TableShell`, the pill nav): tokens flip back to light and focus rings turn dark.
+- White surfaces use `.light-surface` (`LightPanel`, `TableShell`, the pill nav): tokens flip back to light and focus rings turn dark.
 - Contrast rules (measured): lime is **only** a background with dark text, never text on white (1.25:1). Status colors are text only on dark panels; on white, `StatusPill` shows dark text with a colored dot/border. Muted text never sits on `--admin-panel-2` (4.14:1). Danger buttons use dark text on `#FF5A5F` (`--destructive-foreground`).
-- Focus: 2px outline in `--ring` (lime on dark, dark inside `.admin-light`).
-- Components (`src/components/admin/`): `Panel`, `LightPanel`, `StatCard`, `PillTabs` (+ `tabHref`), `FilterBar`, `StatusPill` / `ActivePill`, `InitialsAvatar` / `AvatarStack` (no remote photos), `PageActions` (renders into the title row's action slot).
+- Focus: 2px outline in `--ring` (lime on dark, dark inside `.light-surface`).
+- Admin components (`src/components/admin/`): `Panel`, `StatCard`, `FilterBar`, `InitialsAvatar` / `AvatarStack` (no remote photos), `PageActions` (renders into the title row's action slot). Shared ones (`LightPanel`, `PillTabs`, `StatusPill`) live in `src/components/ui`.
 
 ## Booking status rules
 

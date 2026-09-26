@@ -8,7 +8,7 @@ import { AdminEmpty, TableShell, rowClass, tdClass, thClass } from "@/components
 import { InitialsAvatar } from "@/components/admin/avatar";
 import { BookingStatusSelect } from "@/components/admin/booking-status-select";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
-import { StatusPill } from "@/components/admin/status-pill";
+import { StatusPill } from "@/components/ui/status-pill";
 import { BookingTimeline } from "@/components/bookings/booking-timeline";
 import { Button } from "@/components/ui/button";
 import {

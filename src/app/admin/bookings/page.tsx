@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { BookingsTable } from "@/components/admin/bookings-table";
 import { FilterBar } from "@/components/admin/filter-bar";
-import { PillTabs, tabHref } from "@/components/admin/pill-tabs";
+import { PillTabs } from "@/components/ui/pill-tabs";
+import { tabHref } from "@/lib/url";
 import { STATUS_LABELS } from "@/components/bookings/status-badge";
 import { Pagination } from "@/components/services/pagination";
 import { requirePageAdmin } from "@/lib/auth";
