@@ -32,7 +32,9 @@ function pageList(page: number, totalPages: number): (number | null)[] {
 }
 
 const itemClass =
-  "rounded-control inline-flex h-10 min-w-10 items-center justify-center gap-1 border px-3 text-sm font-medium transition-colors";
+  "rounded-control inline-flex h-10 min-w-10 items-center justify-center gap-1 px-4 text-sm font-medium transition-colors";
+const idleClass = "bg-card shadow-surface text-foreground hover:bg-surface-2";
+const disabledClass = "bg-card text-muted-foreground opacity-50";
 
 export function Pagination({ page, totalPages, params, basePath = "/services" }: PaginationProps) {
   if (totalPages <= 1) return null;
@@ -43,14 +45,14 @@ export function Pagination({ page, totalPages, params, basePath = "/services" }:
   return (
     <nav aria-label="Pagination" className="flex flex-wrap items-center justify-center gap-2">
       {prevDisabled ? (
-        <span className={cn(itemClass, "text-muted-foreground border-border opacity-50")}>
+        <span className={cn(itemClass, disabledClass)}>
           <ChevronLeft className="size-4" aria-hidden="true" />
           Prev
         </span>
       ) : (
         <Link
           href={pageHref(basePath, params, page - 1)}
-          className={cn(itemClass, "border-border bg-card hover:bg-muted")}
+          className={cn(itemClass, idleClass)}
           rel="prev"
         >
           <ChevronLeft className="size-4" aria-hidden="true" />
@@ -71,8 +73,8 @@ export function Pagination({ page, totalPages, params, basePath = "/services" }:
             className={cn(
               itemClass,
               p === page
-                ? "bg-primary text-primary-foreground border-primary"
-                : "border-border bg-card hover:bg-muted hidden sm:inline-flex",
+                ? "bg-primary text-primary-foreground"
+                : cn(idleClass, "hidden sm:inline-flex"),
             )}
           >
             {p}
@@ -81,14 +83,14 @@ export function Pagination({ page, totalPages, params, basePath = "/services" }:
       )}
 
       {nextDisabled ? (
-        <span className={cn(itemClass, "text-muted-foreground border-border opacity-50")}>
+        <span className={cn(itemClass, disabledClass)}>
           Next
           <ChevronRight className="size-4" aria-hidden="true" />
         </span>
       ) : (
         <Link
           href={pageHref(basePath, params, page + 1)}
-          className={cn(itemClass, "border-border bg-card hover:bg-muted")}
+          className={cn(itemClass, idleClass)}
           rel="next"
         >
           Next

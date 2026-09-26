@@ -24,7 +24,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       footer={
         <>
           New to ServiceHub?{" "}
-          <Link href="/register" className="text-primary font-medium hover:underline">
+          <Link
+            href="/register"
+            className="text-foreground font-medium underline underline-offset-4"
+          >
             Create an account
           </Link>
         </>

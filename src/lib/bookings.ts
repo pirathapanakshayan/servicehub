@@ -283,3 +283,26 @@ export async function getCustomerDashboard(userId: string) {
     nextBooking: next ? serializeBooking(next, { includeUser: false }) : null,
   };
 }
+
+/** Number of bookings in each My Bookings tab. */
+export async function getCustomerTabCounts(userId: string): Promise<Record<BookingTab, number>> {
+  const counts = await prisma.$transaction(
+    BOOKING_TABS.map((tab) => prisma.booking.count({ where: { userId, ...tabWhere(tab) } })),
+  );
+  return Object.fromEntries(BOOKING_TABS.map((tab, i) => [tab, counts[i]!])) as Record<
+    BookingTab,
+    number
+  >;
+}
+
+/** Active services the customer booked most recently (deduplicated), for "Book again". */
+export async function getRecentlyBookedServices(userId: string, take = 4) {
+  const rows = await prisma.booking.findMany({
+    where: { userId, service: { status: "ACTIVE" } },
+    select: { service: { select: serviceSelect } },
+    orderBy: { createdAt: "desc" },
+    distinct: ["serviceId"],
+    take,
+  });
+  return rows.map(({ service }) => ({ ...service, price: service.price.toFixed(2) }));
+}

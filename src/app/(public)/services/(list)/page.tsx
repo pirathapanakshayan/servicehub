@@ -4,7 +4,10 @@ import { Pagination } from "@/components/services/pagination";
 import { ServiceFilters } from "@/components/services/service-filters";
 import { ServiceGrid } from "@/components/services/service-grid";
 import { ServicesEmpty } from "@/components/services/services-empty";
+import { PillTabs } from "@/components/ui/pill-tabs";
+import { SerifAccent } from "@/components/ui/serif-accent";
 import { getCategories, listServices } from "@/lib/services";
+import { tabHref } from "@/lib/url";
 import { parseServiceQuery } from "@/lib/validators";
 
 export const metadata: Metadata = {
@@ -37,22 +40,45 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const from = meta.total === 0 ? 0 : (meta.page - 1) * meta.limit + 1;
   const to = Math.min(meta.page * meta.limit, meta.total);
 
+  const tabs = [
+    {
+      label: "All",
+      href: tabHref("/services", linkParams, "categoryId"),
+      active: !query.categoryId,
+    },
+    ...categories.map((c) => ({
+      label: c.name,
+      href: tabHref("/services", linkParams, "categoryId", c.id),
+      active: query.categoryId === c.id,
+    })),
+  ];
+
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
+    <div className="mx-auto max-w-[1200px] space-y-6 px-4 py-10">
       <PageHeader
-        title="Services"
-        description="Find and book trusted professionals for your home and lifestyle."
+        eyebrow="Catalogue"
+        title={
+          <>
+            Find your <SerifAccent>service</SerifAccent>
+          </>
+        }
+        description={
+          <span aria-live="polite">
+            {meta.total === 0
+              ? "No results"
+              : `Showing ${from}–${to} of ${meta.total} ${meta.total === 1 ? "service" : "services"}`}
+          </span>
+        }
       />
 
       <ServiceFilters categories={categories} />
+
+      <PillTabs tabs={tabs} label="Categories" />
 
       {services.length === 0 ? (
         <ServicesEmpty />
       ) : (
         <>
-          <p className="text-muted-foreground text-sm" aria-live="polite">
-            Showing {from}–{to} of {meta.total} {meta.total === 1 ? "service" : "services"}
-          </p>
           <h2 className="sr-only">Results</h2>
           <ServiceGrid services={services} />
           <Pagination page={meta.page} totalPages={totalPages} params={linkParams} />

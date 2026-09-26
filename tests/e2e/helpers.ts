@@ -25,7 +25,7 @@ export async function expectToast(page: Page, text: string | RegExp) {
 export async function loginAsAdmin(page: Page) {
   await page.goto("/admin/login");
   await page.getByLabel("Email").fill("admin@servicehub.com");
-  await page.getByLabel("Password").fill("Admin@123");
+  await page.getByLabel("Password", { exact: true }).fill("Admin@123");
   await page.getByRole("button", { name: "Log in to admin" }).click();
   await expect(page).toHaveURL(/\/admin\/dashboard$/);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { LoaderCircle } from "lucide-react";
+import { CircleX, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -44,7 +44,16 @@ export function CancelBookingButton({ bookingId, serviceName, when }: CancelBook
 
   return (
     <AlertDialog open={open} onOpenChange={(next) => !pending && setOpen(next)}>
-      <AlertDialogTrigger render={<Button variant="destructive" className="h-10 w-full" />}>
+      <AlertDialogTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="lg"
+            className="text-danger hover:bg-danger/10 w-full sm:w-auto"
+          />
+        }
+      >
+        <CircleX aria-hidden="true" />
         Cancel booking
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -56,12 +65,13 @@ export function CancelBookingButton({ bookingId, serviceName, when }: CancelBook
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>Keep booking</AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-danger hover:bg-danger/90 text-white"
-            onClick={cancel}
-            disabled={pending}
-          >
-            {pending && <LoaderCircle className="animate-spin" aria-hidden="true" />}
+          <AlertDialogAction variant="destructive" onClick={cancel} disabled={pending}>
+            {pending && (
+              <LoaderCircle
+                className="animate-spin motion-reduce:animate-none"
+                aria-hidden="true"
+              />
+            )}
             {pending ? "Cancelling..." : "Yes, cancel"}
           </AlertDialogAction>
         </AlertDialogFooter>

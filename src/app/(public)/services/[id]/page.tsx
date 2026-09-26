@@ -1,9 +1,8 @@
-import { CalendarPlus, Clock, Tag } from "lucide-react";
+import { Clock, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,13 +11,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { buttonVariants } from "@/components/ui/button";
-import { BookingForm } from "@/components/bookings/booking-form";
+import { ButtonArrow, buttonVariants } from "@/components/ui/button";
+import { SectionHeader } from "@/components/ui/section-header";
+import { BookingPanel } from "@/components/bookings/booking-panel";
 import { CategoryIcon } from "@/components/services/category-icon";
+import { ServiceGrid } from "@/components/services/service-grid";
 import { ServiceImage } from "@/components/services/service-image";
+import { ServiceIncluded } from "@/components/services/service-included";
 import { getSession } from "@/lib/auth";
 import { formatDuration, formatPrice } from "@/lib/format";
-import { getService } from "@/lib/services";
+import { getRelatedServices, getService } from "@/lib/services";
 import { uuidParamSchema } from "@/lib/validators";
 
 type ServicePageProps = { params: Promise<{ id: string }> };
@@ -38,14 +40,14 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
 export default async function ServiceDetailPage({ params }: ServicePageProps) {
   const [service, session] = await Promise.all([loadService((await params).id), getSession()]);
   if (!service) notFound();
+  const related = await getRelatedServices(service);
 
-  const isCustomer = session?.role === "CUSTOMER";
-  const bookHref = session
-    ? "#book"
-    : `/login?redirect=${encodeURIComponent(`/services/${service.id}#book`)}`;
+  const viewer = !session ? "guest" : session.role === "CUSTOMER" ? "customer" : "admin";
+  const chip =
+    "bg-card shadow-surface text-foreground flex items-center gap-2 rounded-full px-4 py-2 text-sm";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+    <div className="mx-auto max-w-[1200px] space-y-8 px-4 py-8">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -70,84 +72,54 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-        <article className="space-y-6">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <article className="min-w-0 space-y-8">
           <ServiceImage
             name={service.name}
             imageUrl={service.imageUrl}
             categorySlug={service.category.slug}
-            className="rounded-card border-border border"
-            sizes="(min-width: 1024px) 700px, 100vw"
+            className="rounded-section"
+            sizes="(min-width: 1200px) 740px, (min-width: 1024px) 60vw, 100vw"
             priority
           />
-          <div className="space-y-3">
-            <Badge variant="secondary" className="gap-1.5">
-              <CategoryIcon slug={service.category.slug} className="size-3.5" />
+          <div className="space-y-4">
+            <span className="bg-card shadow-surface text-foreground inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
+              <CategoryIcon slug={service.category.slug} className="text-primary size-4" />
               {service.category.name}
-            </Badge>
-            <h1 className="text-ink text-3xl font-bold tracking-tight">{service.name}</h1>
+            </span>
+            <h1 className="text-h1 text-foreground font-medium text-balance max-sm:text-[32px]">
+              {service.name}
+            </h1>
+            <ul className="flex flex-wrap gap-2" aria-label="Service details">
+              <li className={chip}>
+                <Clock className="text-primary size-4" aria-hidden="true" />
+                {formatDuration(service.durationMinutes)}
+              </li>
+              <li className={chip}>
+                <Wallet className="text-primary size-4" aria-hidden="true" />
+                {formatPrice(service.price)}
+              </li>
+            </ul>
           </div>
-          <section aria-labelledby="about-heading" className="space-y-2">
-            <h2 id="about-heading" className="text-ink text-lg font-semibold">
+          <section aria-labelledby="about-heading" className="space-y-3">
+            <h2 id="about-heading" className="text-h3 text-foreground font-medium">
               About this service
             </h2>
             <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
               {service.description}
             </p>
           </section>
+          <section aria-labelledby="included-heading" className="space-y-4">
+            <h2 id="included-heading" className="text-h3 text-foreground font-medium">
+              What&apos;s included
+            </h2>
+            <ServiceIncluded categorySlug={service.category.slug} />
+          </section>
         </article>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="bg-card border-border rounded-card space-y-5 border p-6 shadow-sm">
-            <div>
-              <p className="text-muted-foreground text-sm">Price</p>
-              <p className="text-ink text-3xl font-bold">{formatPrice(service.price)}</p>
-            </div>
-            <dl className="divide-border divide-y text-sm">
-              <div className="flex items-center justify-between py-3">
-                <dt className="text-muted-foreground flex items-center gap-2">
-                  <Clock className="size-4" aria-hidden="true" />
-                  Duration
-                </dt>
-                <dd className="text-ink font-medium">{formatDuration(service.durationMinutes)}</dd>
-              </div>
-              <div className="flex items-center justify-between py-3">
-                <dt className="text-muted-foreground flex items-center gap-2">
-                  <Tag className="size-4" aria-hidden="true" />
-                  Category
-                </dt>
-                <dd className="text-ink font-medium">{service.category.name}</dd>
-              </div>
-            </dl>
-            {session && !isCustomer ? (
-              <p className="text-muted-foreground bg-background border-border rounded-control border p-3 text-center text-sm">
-                Admin accounts can&apos;t make bookings.
-              </p>
-            ) : (
-              <Link href={bookHref} className={buttonVariants({ className: "h-11 w-full" })}>
-                <CalendarPlus aria-hidden="true" />
-                Book this service
-              </Link>
-            )}
-            {!session && (
-              <p className="text-muted-foreground text-center text-xs">
-                You&apos;ll be asked to log in before booking.
-              </p>
-            )}
-          </div>
-        </aside>
-      </div>
-
-      {isCustomer && (
-        <section
-          id="book"
-          aria-labelledby="book-heading"
-          className="bg-card border-border rounded-card scroll-mt-24 border p-6 shadow-sm"
-        >
-          <h2 id="book-heading" className="text-ink mb-6 text-xl font-bold">
-            Book this service
-          </h2>
-          <BookingForm
+          <BookingPanel
+            viewer={viewer}
             service={{
               id: service.id,
               name: service.name,
@@ -155,6 +127,26 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
               durationMinutes: service.durationMinutes,
             }}
           />
+        </aside>
+      </div>
+
+      {related.length > 0 && (
+        <section aria-labelledby="related-heading" className="space-y-8 pt-10">
+          <SectionHeader
+            id="related-heading"
+            eyebrow={service.category.name}
+            title="You might also like"
+            action={
+              <Link
+                href={`/services?categoryId=${service.category.id}`}
+                className={buttonVariants({ variant: "ghost" })}
+              >
+                See all
+                <ButtonArrow />
+              </Link>
+            }
+          />
+          <ServiceGrid services={related} />
         </section>
       )}
     </div>

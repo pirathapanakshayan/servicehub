@@ -24,11 +24,11 @@ test("customer registers, books a slot, sees it in My Bookings and cancels it", 
       .getByRole("navigation", { name: "Main" })
       .getByRole("link", { name: "Services" })
       .click();
-    await expect(page.getByRole("heading", { level: 1, name: "Services" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /Find your service/ })).toBeVisible();
     await page.getByLabel("Search").fill("Haircut");
     await expect(page).toHaveURL(/search=Haircut/);
     await expect(page.getByRole("heading", { level: 3, name: SERVICE })).toBeVisible();
-    await page.getByRole("link", { name: "View details" }).first().click();
+    await page.getByRole("link", { name: SERVICE }).first().click();
     await expect(page.getByRole("heading", { level: 1, name: SERVICE })).toBeVisible();
     await expect(page.getByText("LKR 2,500.00").first()).toBeVisible();
   });
@@ -43,15 +43,16 @@ test("customer registers, books a slot, sees it in My Bookings and cancels it", 
     await slot.click();
     await expect(slot).toHaveAttribute("aria-pressed", "true");
     await page.getByLabel(/Notes for the provider/).fill("Booked by the E2E test");
-    await page.getByRole("button", { name: "Review booking" }).click();
+    await page.getByRole("button", { name: "Confirm booking" }).click();
 
     const dialog = page.getByRole("alertdialog");
     await expect(dialog).toContainText(SERVICE);
     await expect(dialog).toContainText(bookedTime);
     await dialog.getByRole("button", { name: "Confirm booking" }).click();
 
-    // The toast fires before the redirect; check it first (a cold dev compile can outlast it).
+    // The toast fires with the success state; check it first (a cold dev compile can outlast it).
     await expectToast(page, "Booking requested");
+    await page.getByRole("link", { name: "View booking" }).click();
     await expect(page).toHaveURL(/\/my-bookings\/[0-9a-f-]{36}$/);
     await expect(page.getByRole("heading", { level: 1, name: SERVICE })).toBeVisible();
   });

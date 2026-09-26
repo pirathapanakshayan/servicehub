@@ -111,3 +111,24 @@ export async function getCategoriesWithCounts() {
   });
   return rows.map(({ _count, ...c }) => ({ ...c, serviceCount: _count.services }));
 }
+
+/** Headline numbers for the landing page. */
+export async function getLandingStats() {
+  const [services, bookings, customers] = await prisma.$transaction([
+    prisma.service.count({ where: { status: "ACTIVE" } }),
+    prisma.booking.count(),
+    prisma.user.count({ where: { role: "CUSTOMER" } }),
+  ]);
+  return { services, bookings, customers };
+}
+
+/** Other active services in the same category (newest first), for the detail page. */
+export async function getRelatedServices(service: { id: string; categoryId: string }, take = 3) {
+  const rows = await prisma.service.findMany({
+    where: { status: "ACTIVE", categoryId: service.categoryId, id: { not: service.id } },
+    include: serviceInclude,
+    orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+    take,
+  });
+  return rows.map(serializeService);
+}

@@ -9,10 +9,17 @@ type SubmitButtonProps = {
 
 export function SubmitButton({ pending, pendingText, children }: SubmitButtonProps) {
   return (
-    <Button type="submit" className="h-10 w-full" disabled={pending} aria-busy={pending}>
+    <Button
+      type="submit"
+      size="lg"
+      className="h-12 w-full text-base"
+      disabled={pending}
+      aria-busy={pending}
+      arrow={!pending}
+    >
       {pending ? (
         <>
-          <LoaderCircle className="animate-spin" aria-hidden="true" />
+          <LoaderCircle className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
           {pendingText}
         </>
       ) : (

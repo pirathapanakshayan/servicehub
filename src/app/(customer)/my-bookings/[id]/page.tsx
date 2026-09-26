@@ -1,10 +1,12 @@
-import { ArrowLeft, CalendarDays, Clock, Tag, Timer } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, Timer, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookingTimeline } from "@/components/bookings/booking-timeline";
 import { CancelBookingButton } from "@/components/bookings/cancel-booking-button";
 import { StatusBadge } from "@/components/bookings/status-badge";
+import { ServiceImage } from "@/components/services/service-image";
+import { ButtonArrow, buttonVariants } from "@/components/ui/button";
 import { requirePageUser } from "@/lib/auth";
 import { canCustomerCancel } from "@/lib/booking-rules";
 import { getBookingForViewer } from "@/lib/bookings";
@@ -26,70 +28,65 @@ export default async function BookingDetailPage({ params }: BookingDetailPagePro
   if (!booking) notFound();
 
   const when = `${formatDate(booking.bookingDate)} at ${formatTime(booking.bookingTime)}`;
-  const details = [
+  const chips = [
     { label: "Date", value: formatDate(booking.bookingDate), icon: CalendarDays },
     { label: "Time", value: formatTime(booking.bookingTime), icon: Clock },
     { label: "Duration", value: formatDuration(booking.service.durationMinutes), icon: Timer },
-    { label: "Category", value: booking.service.category.name, icon: Tag },
+    { label: "Price", value: formatPrice(booking.totalPrice), icon: Wallet },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <Link
         href="/my-bookings"
-        className="text-muted-foreground hover:text-ink inline-flex items-center gap-1 text-sm font-medium"
+        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm font-medium"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         Back to my bookings
       </Link>
 
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <StatusBadge status={booking.status} />
-          <h1 className="text-ink text-3xl font-bold">{booking.service.name}</h1>
-          <p className="text-muted-foreground text-sm">
-            Booking reference{" "}
-            <span className="text-ink font-mono">{booking.id.slice(0, 8).toUpperCase()}</span> ·
-            Booked {formatDateTime(booking.createdAt)}
-          </p>
-        </div>
-      </header>
+      <article className="bg-card shadow-surface rounded-section overflow-hidden">
+        <header className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:p-8">
+          <ServiceImage
+            name=""
+            imageUrl={booking.service.imageUrl}
+            categorySlug={booking.service.category.slug}
+            className="rounded-card aspect-square size-20 shrink-0 [&_svg]:size-8"
+            sizes="80px"
+          />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <StatusBadge status={booking.status} />
+              <span className="text-muted-foreground text-sm">{booking.service.category.name}</span>
+            </div>
+            <h1 className="text-h2 text-foreground font-medium text-balance">
+              {booking.service.name}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Ref{" "}
+              <span className="text-foreground font-mono">
+                {booking.id.slice(0, 8).toUpperCase()}
+              </span>{" "}
+              · Booked {formatDateTime(booking.createdAt)}
+            </p>
+          </div>
+        </header>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-6">
-          <section
-            aria-labelledby="details-heading"
-            className="bg-card border-border rounded-card border p-6"
-          >
-            <h2 id="details-heading" className="text-ink mb-4 font-semibold">
-              Booking details
-            </h2>
-            <dl className="grid gap-4 sm:grid-cols-2">
-              {details.map(({ label, value, icon: Icon }) => (
-                <div key={label} className="flex items-start gap-3">
-                  <span className="bg-primary/10 text-primary rounded-full p-2">
-                    <Icon className="size-4" aria-hidden="true" />
-                  </span>
-                  <div>
-                    <dt className="text-muted-foreground text-xs">{label}</dt>
-                    <dd className="text-ink font-medium">{value}</dd>
-                  </div>
-                </div>
-              ))}
-            </dl>
-            {booking.notes && (
-              <div className="border-border mt-6 border-t pt-4">
-                <h3 className="text-muted-foreground mb-1 text-xs">Your notes</h3>
-                <p className="text-ink text-sm whitespace-pre-line">{booking.notes}</p>
+        <div className="space-y-8 px-6 pb-6 sm:px-8 sm:pb-8">
+          <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {chips.map(({ label, value, icon: Icon }) => (
+              <div key={label} className="bg-background rounded-inner space-y-1 p-4">
+                <dt className="text-muted-foreground text-label flex items-center gap-1.5">
+                  <Icon className="text-primary size-3.5" aria-hidden="true" />
+                  {label}
+                </dt>
+                <dd className="text-foreground font-medium">{value}</dd>
               </div>
-            )}
-          </section>
+            ))}
+          </dl>
 
-          <section
-            aria-labelledby="timeline-heading"
-            className="bg-card border-border rounded-card border p-6"
-          >
-            <h2 id="timeline-heading" className="text-ink mb-4 font-semibold">
+          <section aria-labelledby="timeline-heading" className="space-y-4">
+            <h2 id="timeline-heading" className="text-h3 text-foreground font-medium">
               Status
             </h2>
             <BookingTimeline
@@ -98,29 +95,38 @@ export default async function BookingDetailPage({ params }: BookingDetailPagePro
               updatedAt={booking.updatedAt}
             />
           </section>
-        </div>
 
-        <aside className="bg-card border-border rounded-card h-fit space-y-4 border p-6">
-          <div>
-            <p className="text-muted-foreground text-sm">Total price</p>
-            <p className="text-ink text-2xl font-bold">{formatPrice(booking.totalPrice)}</p>
-            <p className="text-muted-foreground text-xs">Price locked in when you booked.</p>
-          </div>
-          <Link
-            href={`/services/${booking.service.id}`}
-            className="text-primary block text-sm font-semibold hover:underline"
-          >
-            View service
-          </Link>
-          {canCustomerCancel(booking.status) && (
-            <CancelBookingButton
-              bookingId={booking.id}
-              serviceName={booking.service.name}
-              when={when}
-            />
+          {booking.notes && (
+            <section aria-labelledby="notes-heading" className="space-y-2">
+              <h2 id="notes-heading" className="text-h3 text-foreground font-medium">
+                Your notes
+              </h2>
+              <p className="bg-background text-foreground rounded-inner p-4 text-sm whitespace-pre-line">
+                {booking.notes}
+              </p>
+            </section>
           )}
-        </aside>
-      </div>
+
+          <div className="border-border flex flex-col-reverse gap-2 border-t pt-6 sm:flex-row sm:justify-between">
+            {canCustomerCancel(booking.status) ? (
+              <CancelBookingButton
+                bookingId={booking.id}
+                serviceName={booking.service.name}
+                when={when}
+              />
+            ) : (
+              <span />
+            )}
+            <Link
+              href={`/services/${booking.service.id}`}
+              className={buttonVariants({ variant: "ghost", size: "lg" })}
+            >
+              View service
+              <ButtonArrow />
+            </Link>
+          </div>
+        </div>
+      </article>
     </div>
   );
 }

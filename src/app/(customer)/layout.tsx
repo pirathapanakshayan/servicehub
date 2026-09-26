@@ -6,7 +6,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
     <div className="flex min-h-svh flex-col">
       <Navbar />
       <main className="flex-1">
-        <div className="mx-auto max-w-6xl px-4 py-10">{children}</div>
+        <div className="mx-auto max-w-[1200px] px-4 py-10">{children}</div>
       </main>
       <Footer />
     </div>

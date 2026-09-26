@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { BookingCard } from "@/components/bookings/booking-card";
 import { BookingsEmpty } from "@/components/bookings/bookings-empty";
 import { PageHeader } from "@/components/layout/page-header";
 import { Pagination } from "@/components/services/pagination";
+import { LightPanel } from "@/components/ui/light-panel";
+import { PillTabs } from "@/components/ui/pill-tabs";
 import { requirePageUser } from "@/lib/auth";
-import { BOOKING_TABS, listCustomerBookings, type BookingTab } from "@/lib/bookings";
-import { cn } from "@/lib/utils";
+import {
+  BOOKING_TABS,
+  getCustomerTabCounts,
+  listCustomerBookings,
+  type BookingTab,
+} from "@/lib/bookings";
+import { tabHref } from "@/lib/url";
 
 export const metadata: Metadata = { title: "My bookings" };
 
@@ -38,48 +44,45 @@ export default async function MyBookingsPage({ searchParams }: MyBookingsPagePro
   const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
 
   const user = await requirePageUser("/my-bookings");
-  const { data: bookings, meta } = await listCustomerBookings(user.id, tab, page);
+  const [{ data: bookings, meta }, counts] = await Promise.all([
+    listCustomerBookings(user.id, tab, page),
+    getCustomerTabCounts(user.id),
+  ]);
   const totalPages = Math.max(1, Math.ceil(meta.total / meta.limit));
 
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Bookings"
         title="My bookings"
         description="Track, review and manage your service bookings."
       />
 
-      <nav
-        aria-label="Booking filters"
-        className="border-border flex gap-1 overflow-x-auto border-b"
-      >
-        {BOOKING_TABS.map((t) => (
-          <Link
-            key={t}
-            href={t === "all" ? "/my-bookings" : `/my-bookings?tab=${t}`}
-            aria-current={t === tab ? "page" : undefined}
-            className={cn(
-              "-mb-px border-b-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors",
-              t === tab
-                ? "border-primary text-primary"
-                : "text-muted-foreground hover:text-ink border-transparent",
-            )}
-          >
-            {TAB_LABELS[t]}
-          </Link>
-        ))}
-      </nav>
+      <PillTabs
+        label="Booking filters"
+        tabs={BOOKING_TABS.map((t) => ({
+          label: TAB_LABELS[t],
+          href: tabHref("/my-bookings", {}, "tab", t === "all" ? undefined : t),
+          count: counts[t],
+          active: t === tab,
+        }))}
+      />
 
       {bookings.length === 0 ? (
-        <BookingsEmpty message={EMPTY_MESSAGES[tab]} />
+        <LightPanel>
+          <BookingsEmpty message={EMPTY_MESSAGES[tab]} />
+        </LightPanel>
       ) : (
         <>
-          <ul className="space-y-3">
-            {bookings.map((booking) => (
-              <li key={booking.id}>
-                <BookingCard booking={booking} />
-              </li>
-            ))}
-          </ul>
+          <LightPanel className="p-2 sm:p-3">
+            <ul className="divide-border divide-y">
+              {bookings.map((booking) => (
+                <li key={booking.id}>
+                  <BookingCard booking={booking} />
+                </li>
+              ))}
+            </ul>
+          </LightPanel>
           <Pagination
             page={meta.page}
             totalPages={totalPages}

@@ -12,6 +12,8 @@
   /* Instrument Serif italic: only for one accent word inside big headings (<SerifAccent>). */
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
   --color-surface-2: var(--brand-surface-2);
+  --color-aurora-teal: var(--brand-aurora-teal);
+  --color-aurora-violet: var(--brand-aurora-violet);
   --color-light: var(--brand-light);
   --color-light-text: var(--brand-light-text);
   --color-light-muted: var(--brand-light-muted);
@@ -121,6 +123,9 @@
   --status-confirmed: #5aa9ff;
   --status-completed: #c5f82a;
   --status-cancelled: #8a8f98;
+  /* Landing hero aurora (decorative only, never text). */
+  --brand-aurora-teal: #1fd1b9;
+  --brand-aurora-violet: #7c5cff;
 
   /* Older aliases still used by components. */
   --brand-ink: var(--brand-text);
@@ -343,5 +348,166 @@ body:has(.admin-theme) [data-sonner-toaster] {
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Landing page motion (CSS-only, transform/opacity). Static under prefers-reduced-motion. */
+@keyframes aurora-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12%, 8%, 0) scale(1.15);
+  }
+}
+@keyframes aurora-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate3d(-14%, 6%, 0) scale(0.95);
+  }
+}
+@keyframes aurora-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, -10%, 0) scale(1.2);
+  }
+}
+@keyframes line-up {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility animate-aurora-a {
+  animation: aurora-a 24s ease-in-out infinite;
+}
+@utility animate-aurora-b {
+  animation: aurora-b 28s ease-in-out infinite;
+}
+@utility animate-aurora-c {
+  animation: aurora-c 21s ease-in-out infinite;
+}
+/* Text stays visible without JS: the reveal is pure CSS and ends at the resting position. */
+@utility animate-line-up {
+  animation: line-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@utility animate-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@utility animate-bob {
+  animation: bob 5s ease-in-out infinite;
+}
+@utility animate-pulse-ring {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+@utility animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+@utility animate-spin-slow {
+  animation: spin-slow 18s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora-a,
+  .animate-aurora-b,
+  .animate-aurora-c,
+  .animate-line-up,
+  .animate-fade-up,
+  .animate-bob,
+  .animate-pulse-ring,
+  .animate-marquee,
+  .animate-spin-slow {
+    animation: none;
+  }
+}
+
+/* Loading shimmer: a light sweep across skeletons (transform only). */
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+@utility shimmer {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent);
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+}
+
+/* Booking success checkmark: stroke draw (SVG path, no layout). */
+@keyframes draw-check {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@utility animate-draw-check {
+  animation: draw-check 0.5s 0.2s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after,
+  .animate-draw-check {
+    animation: none;
   }
 }

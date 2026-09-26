@@ -1,19 +1,23 @@
 import { CalendarX } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonArrow, buttonVariants } from "@/components/ui/button";
 
 export function BookingsEmpty({ message }: { message: string }) {
   return (
-    <div className="bg-card rounded-card shadow-surface flex flex-col items-center gap-3 px-6 py-16 text-center">
-      <div className="bg-primary/10 text-primary rounded-full p-3">
-        <CalendarX className="size-6" aria-hidden="true" />
+    <div className="flex flex-col items-center gap-4 px-6 py-14 text-center">
+      <div className="relative mb-2" aria-hidden="true">
+        <span className="bg-light-text/5 absolute -inset-3 rounded-full" />
+        <span className="bg-light-text text-light relative flex size-14 items-center justify-center rounded-full">
+          <CalendarX className="size-6" />
+        </span>
       </div>
-      <h2 className="text-ink text-lg font-semibold">{message}</h2>
-      <p className="text-muted-foreground max-w-sm text-sm">
+      <h2 className="text-h3 text-light-text font-medium">{message}</h2>
+      <p className="text-light-muted max-w-sm">
         Find a trusted professional and book a time that suits you.
       </p>
-      <Link href="/services" className={buttonVariants({ className: "mt-2 h-10" })}>
+      <Link href="/services" className={buttonVariants({ size: "lg", className: "mt-2" })}>
         Browse services
+        <ButtonArrow />
       </Link>
     </div>
   );

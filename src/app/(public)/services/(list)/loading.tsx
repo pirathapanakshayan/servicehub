@@ -1,16 +1,18 @@
 import { ServiceGridSkeleton } from "@/components/services/service-card-skeleton";
-import { Skeleton } from "@/components/ui/skeleton";
+
+const block = "bg-surface-2 shimmer rounded-full";
 
 export default function ServicesLoading() {
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" aria-busy="true">
+    <div className="mx-auto max-w-[1200px] space-y-6 px-4 py-10" aria-busy="true">
       <span className="sr-only">Loading services...</span>
-      <div className="space-y-2">
-        <Skeleton className="h-9 w-40" />
-        <Skeleton className="h-5 w-80 max-w-full" />
+      <div className="space-y-3">
+        <div className={`${block} h-4 w-24`} />
+        <div className={`${block} h-9 w-64`} />
+        <div className={`${block} h-5 w-48`} />
       </div>
-      <Skeleton className="rounded-card h-40 w-full sm:h-36 lg:h-[82px]" />
-      <Skeleton className="h-4 w-44" />
+      <div className={`${block} h-11 w-full`} />
+      <div className={`${block} h-11 w-80 max-w-full`} />
       <ServiceGridSkeleton count={9} />
     </div>
   );

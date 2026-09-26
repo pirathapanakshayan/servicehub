@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FormField } from "@/components/auth/form-field";
+import { PasswordStrength } from "@/components/auth/password-strength";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 import { registerSchema, type RegisterInput } from "@/lib/validators";
@@ -17,6 +18,7 @@ export function RegisterForm() {
     register,
     handleSubmit,
     setError,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -91,7 +93,9 @@ export function RegisterForm() {
         hint="At least 8 characters, with a letter and a number."
         registration={register("password")}
         error={errors.password?.message}
-      />
+      >
+        <PasswordStrength password={watch("password")} />
+      </FormField>
       <FormField
         id="confirmPassword"
         label="Confirm password"

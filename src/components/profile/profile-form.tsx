@@ -59,7 +59,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       />
       <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" value={user.email} disabled readOnly className="h-10" />
+        <Input id="email" type="email" value={user.email} disabled readOnly className="h-11" />
         <p className="text-muted-foreground text-xs">Email can&apos;t be changed.</p>
       </div>
       <FormField
@@ -71,7 +71,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
         registration={register("phone")}
         error={errors.phone?.message}
       />
-      <div className="sm:max-w-48">
+      <div className="sm:max-w-56">
         <SubmitButton pending={isSubmitting} pendingText="Saving...">
           Save changes
         </SubmitButton>

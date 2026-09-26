@@ -1,10 +1,4 @@
-import { Navbar } from "@/components/layout/navbar";
-
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      <main>{children}</main>
-    </>
-  );
+  // AuthCard renders the split layout (brand panel + <main>), so no navbar here.
+  return children;
 }

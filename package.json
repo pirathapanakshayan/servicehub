@@ -34,6 +34,7 @@
     "date-fns": "^4.4.0",
     "jose": "^6.2.12",
     "lucide-react": "^1.48.0",
+    "motion": "^13.4.4",
     "next": "15.5.26",
     "react": "19.1.0",
     "react-day-picker": "^10.0.1",
